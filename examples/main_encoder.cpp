@@ -7,9 +7,9 @@
 
 #include <car/encoder/encoder_as5048a.h>
 
-int SPI_SCK = 13;
-int SPI_CS0 = 2;
-int SPI_CS1 = 14;
+uint8_t SPI_SCK = 13;
+uint8_t SPI_CS0 = 2;
+uint8_t SPI_CS1 = 14;
 
 car::encoder::Encoder *encoder;
 int loop_count = 0;
@@ -18,12 +18,7 @@ int loop_count = 0;
 void setup()
 {
   // initialize the digital pin as an output.
-  pinMode(SPI_CS0, OUTPUT);
-  pinMode(SPI_CS1, OUTPUT);
-  encoder = new car::encoder::AS5048A;
-  encoder->init(SPI_SCK);
-  digitalWriteFast(SPI_CS0, HIGH);
-  digitalWriteFast(SPI_CS1, HIGH);
+  encoder = new car::encoder::AS5048A(SPI_SCK, std::array<uint8_t, 2>({SPI_CS0, SPI_CS1}));
 
   Serial.begin(115200); /// init serial
   while (!Serial)
@@ -36,9 +31,9 @@ void loop()
 {
   Serial.print(loop_count);
   Serial.print(" value: ");
-  Serial.print(encoder->get_raw(SPI_CS0));
+  Serial.print(encoder->get_raw(car::encoder::cs0));
   Serial.print(", ");
-  Serial.println(encoder->get(SPI_CS0));
+  Serial.println(encoder->get(car::encoder::cs0));
   delay(1000); // wait for a second
   loop_count++;
 }
