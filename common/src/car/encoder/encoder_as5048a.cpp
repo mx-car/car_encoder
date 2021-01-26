@@ -20,7 +20,8 @@ AS5048A::AS5048A(uint8_t pinCLK, std::array<uint8_t,2> pinCS)
     digitalWriteFast(pinsCS_[1], HIGH);
 }
 
-uint16_t AS5048A::get_raw(Channel channel){
+Measurement<uint16_t> AS5048A::get_raw(Channel channel){
+    Measurement<uint16_t> measurement;
     uint8_t pinCS = pinsCS_[static_cast<int>(channel)];
 
     //SPI settings according to sensor datasheet: clock: max. 10MHz | MSB first | SPI Mode 1  | CPOL=0, CPHA= 1
@@ -30,8 +31,8 @@ uint16_t AS5048A::get_raw(Channel channel){
     delayMicroseconds(1);
     digitalWriteFast(pinCS, LOW); //SPI Mode 1 -> information gest sampled with falling endge
     //delayMicroseconds(1);
-
-    uint16_t rotaryEncoderValue0 = SPI.transfer16(0xFFFF) & 0x3FFFu;
+    measurement.stamp = micros();
+    measurement.value = SPI.transfer16(0xFFFF) & 0x3FFFu;
     //delayMicroseconds(1);
 
     //command bit15 = 1 (parity) | bit14 = 1 (read) | adresss 0x000 -> B11000000 00000000 = 0xC0000;
@@ -41,7 +42,7 @@ uint16_t AS5048A::get_raw(Channel channel){
     digitalWriteFast(pinCS, LOW); //SPI Mode 1 -> information gest sampled with falling endge
     //delayMicroseconds(1);
 
-    rotaryEncoderValue0 = SPI.transfer16(0xFFFF) & 0x3FFFu;
+    measurement.value = SPI.transfer16(0xFFFF) & 0x3FFFu;
     //delayMicroseconds(1);
 
     digitalWriteFast(pinCS, HIGH); //SPI Mode 1 -> receive information with rising edge
@@ -52,5 +53,5 @@ uint16_t AS5048A::get_raw(Channel channel){
     digitalWriteFast(pinsCS_[0], HIGH);
     digitalWriteFast(pinsCS_[1], HIGH);
 
-    return rotaryEncoderValue0;
+    return measurement;
 }

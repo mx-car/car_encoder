@@ -12,6 +12,7 @@ uint8_t SPI_CS0 = 2;
 uint8_t SPI_CS1 = 14;
 
 car::encoder::Encoder *encoder;
+car::encoder::Measurement<uint16_t> measurement;
 int loop_count = 0;
 
 // the setup routine runs once when you press reset:
@@ -30,10 +31,13 @@ void setup()
 void loop()
 {
   Serial.print(loop_count);
+  measurement = encoder->get_raw(car::encoder::cs0);
   Serial.print(" value: ");
-  Serial.print(encoder->get_raw(car::encoder::cs0));
+  Serial.print(measurement.value);
   Serial.print(", ");
-  Serial.println(encoder->get(car::encoder::cs0));
+  Serial.print(measurement.stamp);
+  Serial.print(" = ");
+  Serial.println(encoder->get(car::encoder::cs0).value);
   delay(1000); // wait for a second
   loop_count++;
 }

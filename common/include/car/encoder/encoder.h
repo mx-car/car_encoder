@@ -8,7 +8,11 @@ namespace car
 {
     namespace encoder
     {
-
+        template <typename T>
+        struct Measurement {
+            uint32_t stamp;    /// microsec
+            T value;
+        };
         /**
         * enum to define channels in the case of multiple encoders using multiple chip select pins
         */
@@ -40,7 +44,7 @@ namespace car
              * @see Encoder::resolution() for the resolution
              * @return rotary encoder position
              */
-            virtual uint16_t get_raw(Channel channel) = 0;
+            virtual Measurement<uint16_t> get_raw(Channel channel) = 0;
 
             /**
              * Angle resolution 
@@ -57,11 +61,11 @@ namespace car
              * @param channel channels @see Encoder::init
              * @return - rotary encoder position in rad -PI to +PI
              */
-            float get(Channel channel)
+            Measurement<float> get(Channel channel)
             {
-                uint16_t v = get_raw(channel);
-                float a = M_TWOPI * (float)v / (float)(resolution_)-M_PI;
-                return a;
+                Measurement<uint16_t> measurement_raw = get_raw(channel);
+                Measurement<float> measurement = {measurement_raw.stamp, M_TWOPI * (float)measurement_raw.value / (float)(resolution_)-M_PI};
+                return measurement;
             };
 
         protected:
