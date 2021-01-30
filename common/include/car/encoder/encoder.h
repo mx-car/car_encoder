@@ -8,11 +8,6 @@ namespace car
 {
     namespace encoder
     {
-        template <typename T>
-        struct Measurement {
-            uint32_t stamp;    /// microsec
-            T value;
-        };
         /**
         * enum to define channels in the case of multiple encoders using multiple chip select pins
         */
@@ -41,10 +36,11 @@ namespace car
             /**
              * Raw SPI transfer. 
              * @param channel channels @see Encoder::init
+             * @param stamp if not null it will be set with the measurement time stamp
              * @see Encoder::resolution() for the resolution
              * @return rotary encoder position
              */
-            virtual Measurement<uint16_t> get_raw(Channel channel) = 0;
+            virtual uint16_t get_raw(Channel channel, uint32_t *stamp = NULL) = 0;
 
             /**
              * Angle resolution 
@@ -61,10 +57,10 @@ namespace car
              * @param channel channels @see Encoder::init
              * @return - rotary encoder position in rad -PI to +PI
              */
-            Measurement<float> get(Channel channel)
+            float get(Channel channel, uint32_t *stamp = NULL)
             {
-                Measurement<uint16_t> measurement_raw = get_raw(channel);
-                Measurement<float> measurement = {measurement_raw.stamp, M_TWOPI * (float)measurement_raw.value / (float)(resolution_)-M_PI};
+                uint16_t measurement_raw = get_raw(channel, stamp);
+                float measurement = M_TWOPI * (float)measurement_raw / (float)(resolution_)-M_PI;
                 return measurement;
             };
 

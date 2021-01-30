@@ -22,7 +22,7 @@ class AS5048A : public Encoder {
          * @param channel channels @see Encoder::init
          * @return - 14 bit rotary encoder position
          */
-        Measurement<uint16_t> get_raw(Channel channel);
+        uint16_t get_raw(Channel channel, uint32_t *stamp = NULL);
 };
 }
 }
