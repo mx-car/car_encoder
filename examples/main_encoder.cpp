@@ -6,20 +6,24 @@
 #include <Arduino.h>
 
 #include <car/encoder/encoder_as5048a.h>
+#include <car/math/measurement.h>
 
 uint8_t SPI_SCK = 13;
 uint8_t SPI_CS0 = 2;
 uint8_t SPI_CS1 = 14;
 
 car::encoder::Encoder *encoder;
-car::encoder::Measurement<uint16_t> measurement;
+int16_t position0;
+uint32_t stamp0;
+int16_t position1;
+uint32_t stamp1;
 int loop_count = 0;
 
 // the setup routine runs once when you press reset:
 void setup()
 {
   // initialize the digital pin as an output.
-  encoder = new car::encoder::AS5048A(SPI_SCK, std::array<uint8_t, 2>({SPI_CS0, SPI_CS1}));
+  encoder = new car::encoder::AS5048A(std::array<uint8_t, 2>({SPI_CS0, SPI_CS1}), SPI_SCK);
 
   Serial.begin(115200); /// init serial
   while (!Serial)
@@ -31,13 +35,20 @@ void setup()
 void loop()
 {
   Serial.print(loop_count);
-  measurement = encoder->get_raw(car::encoder::cs0);
-  Serial.print(" value: ");
-  Serial.print(measurement.value);
+  uint32_t start = micros();
+  encoder->read(SPI_CS0, position0, stamp0);
+  encoder->read(SPI_CS1, position1, stamp1);
+  uint32_t stop = micros();
+  Serial.print(" motor0: ");
+  Serial.print(position0);
   Serial.print(", ");
-  Serial.print(measurement.stamp);
-  Serial.print(" = ");
-  Serial.println(encoder->get(car::encoder::cs0).value);
+  Serial.print(stamp0);
+  Serial.print("; motor1: ");
+  Serial.print(position1);
+  Serial.print(", ");
+  Serial.print(stamp1);
+  Serial.print(", ");
+  Serial.println(stop-start);
   delay(1000); // wait for a second
   loop_count++;
 }

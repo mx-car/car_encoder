@@ -8,14 +8,6 @@ namespace car
 {
     namespace encoder
     {
-        /**
-        * enum to define channels in the case of multiple encoders using multiple chip select pins
-        */
-        enum Channel : int
-        {
-            cs0 = 0,
-            cs1 = 1
-        };
 
         /**
         * Class to read angle encoder values
@@ -26,21 +18,23 @@ namespace car
             /**
             * Constructor
             * @param pinCLK  spi clock pin
+            * @param pinCS   spi clock pin
             * @param pinsCS  spi chip select pins defining the channels
             */
-            Encoder(uint8_t pinCLK, std::array<uint8_t,2> pinCS)
+            Encoder(const std::array<uint8_t,2> &pinCS, uint8_t pinCLK, uint32_t clock, uint8_t bitOrder, uint8_t dataMode)
                 : pinCLK_(pinCLK), pinsCS_(pinCS), resolution_(0)
             {
             }
 
             /**
-             * Raw SPI transfer. 
-             * @param channel channels @see Encoder::init
-             * @param stamp if not null it will be set with the measurement time stamp
+             * reads sensor values via SPI  
+             * @param cs pin chip select which must match a ping on the pinCS values on the contrustor
+             * @param value encode raw values
+             * @param stamp time stamp in micro secounds 
              * @see Encoder::resolution() for the resolution
-             * @return rotary encoder position
-             */
-            virtual uint16_t get_raw(Channel channel, uint32_t *stamp = NULL) = 0;
+             * @return true on error
+             **/
+            virtual void read(uint8_t cs, int16_t &value, uint32_t &stamp) = 0;
 
             /**
              * Angle resolution 
@@ -50,18 +44,6 @@ namespace car
             uint16_t resolution() const
             {
                 return resolution_;
-            };
-
-            /**
-             * encoder reading in -PI to +PI
-             * @param channel channels @see Encoder::init
-             * @return - rotary encoder position in rad -PI to +PI
-             */
-            float get(Channel channel, uint32_t *stamp = NULL)
-            {
-                uint16_t measurement_raw = get_raw(channel, stamp);
-                float measurement = M_TWOPI * (float)measurement_raw / (float)(resolution_)-M_PI;
-                return measurement;
             };
 
         protected:

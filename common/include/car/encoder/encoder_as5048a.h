@@ -3,17 +3,20 @@
 
 #include <cstdint>
 #include <car/encoder/encoder.h>
+#include <SPI.h>
 
 namespace car {
 namespace encoder {
 class AS5048A : public Encoder {
+    private:
+        SPISettings *settings;
     public:
         /**
         * Constructor
         * @param pinCLK  spi clock pin
         * @param pinsCS  spi chip select pins defining the channels
         */
-        AS5048A(uint8_t pinCLK, std::array<uint8_t,2> pinCS);
+        AS5048A(const std::array<uint8_t,2> &pinCS, uint8_t pinCLK, uint32_t clock = 10000000, uint8_t bitOrder = MSBFIRST, uint8_t dataMode = SPI_MODE1);
         
 
         /**
@@ -22,7 +25,8 @@ class AS5048A : public Encoder {
          * @param channel channels @see Encoder::init
          * @return - 14 bit rotary encoder position
          */
-        uint16_t get_raw(Channel channel, uint32_t *stamp = NULL);
+        void read(uint8_t cs, int16_t &value, uint32_t &stamp);
+
 };
 }
 }
