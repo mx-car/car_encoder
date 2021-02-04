@@ -6,7 +6,6 @@
 #include <Arduino.h>
 
 #include <car/encoder/encoder_as5048a.h>
-#include <car/math/measurement.h>
 
 uint8_t SPI_SCK = 13;
 uint8_t SPI_CS0 = 2;
