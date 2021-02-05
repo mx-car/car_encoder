@@ -37,6 +37,4 @@ void AS5048A::read(uint8_t cs, int16_t &value, uint32_t &stamp){
     //delayMicroseconds(1);
 
     SPI.endTransaction();
-
-    return false;
 }
