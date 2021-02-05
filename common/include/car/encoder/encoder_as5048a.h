@@ -1,3 +1,7 @@
+/**
+ * @author Markus Bader <markus.bader@mx-robotics.com>
+ */
+
 #ifndef CAR_ENCODER_AS5048AH
 #define CAR_ENCODER_AS5048AH
 

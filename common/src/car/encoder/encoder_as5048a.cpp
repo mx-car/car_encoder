@@ -1,4 +1,6 @@
-
+/**
+ * @author Markus Bader <markus.bader@mx-robotics.com>
+ */
 #include <cstdlib>
 #include <cstring>
 

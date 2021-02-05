@@ -1,3 +1,7 @@
+/**
+ * @author Markus Bader <markus.bader@mx-robotics.com>
+ */
+
 #ifndef CAR_ENCODER_H
 #define CAR_ENCODER_H
 
